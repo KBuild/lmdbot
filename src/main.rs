@@ -99,7 +99,7 @@ async fn main() {
     let launcher = Twitter::new(
         env::var("TWITTER_ACCESS_TOKEN").expect("Expected Access Token of Twitter"),
         env::var("TWITTER_REFRESH_TOKEN").expect("Expected Refresh Token of Twitter"),
-        env::var("TWITTER_USERID").expect("Expected Refresh Token of Twitter"),
+        env::var("TWITTER_USERID").expect("Expected UserID of Twitter"),
     );
 
     let mut client = Client::builder(&token, intents)
