@@ -3,4 +3,4 @@
 
 # dev
 .env
-auth.txt
+*.txt

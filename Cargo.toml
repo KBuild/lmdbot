@@ -11,6 +11,7 @@ qstring = "0.7.2"
 reqwest = { version = "0.11", features = ["json"] }
 lazy_static = "1.4.0"
 regex = "1"
+rand = "0.6.5"
 
 # Serde
 serde = { version = "1.0", features = ["derive"] }
