@@ -4,8 +4,10 @@ use serenity::{prelude::GatewayIntents, Client};
 
 mod handler;
 mod bob_generator;
+mod role_matcher;
 
 use bob_generator::BobGenerator;
+use role_matcher::RoleMatcher;
 
 #[tokio::main]
 async fn main() {
@@ -24,6 +26,7 @@ async fn main() {
         {
             let mut data = client.data.write().await;
             data.insert::<BobGenerator>(BobGenerator::new("bob_list.txt"));
+            data.insert::<RoleMatcher>(RoleMatcher::new("role_map.txt"));
         }
     if let Err(why) = client.start().await {
         println!("Client error: {:?}", why);

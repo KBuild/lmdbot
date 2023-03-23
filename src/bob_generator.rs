@@ -1,6 +1,6 @@
 extern crate rand;
 
-use rand::Rng;
+use rand::seq::SliceRandom;
 
 impl serenity::prelude::TypeMapKey for BobGenerator {
     type Value = BobGenerator;
@@ -14,12 +14,18 @@ impl BobGenerator {
     pub fn new(file_path: &str) -> Self {
         let contents = std::fs::read_to_string(file_path)
             .expect("Should have been able to read the file");
+
+        let bob_list = contents.lines().into_iter().filter(|str| !str.is_empty()).map(|str| str.to_string()).collect();
+        
+        #[cfg(debug_assertions)]
+        println!("Now I got a list of bobs: {:?}", bob_list);
+
         BobGenerator {
-            list: contents.split("\r\n").into_iter().map(|str| str.to_string()).collect(),
+            list: bob_list,
         }
     }
 
     pub fn pop(&self) -> &String {
-       &self.list[rand::thread_rng().gen_range(0, self.list.len())]
+        self.list.choose(&mut rand::thread_rng()).unwrap()
     }
 }
