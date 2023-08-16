@@ -13,7 +13,7 @@ impl RoleMatcher {
         let contents = std::fs::read_to_string(file_path)
             .expect("Should have been able to read the file");
 
-        let role_map = contents.lines().into_iter()
+        let role_map = contents.lines()
             .filter(|str| !str.is_empty())
             .map(|s| s.split(',').collect::<Vec<&str>>())
             .map(|v|

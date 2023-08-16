@@ -15,7 +15,7 @@ impl BobGenerator {
         let contents = std::fs::read_to_string(file_path)
             .expect("Should have been able to read the file");
 
-        let bob_list = contents.lines().into_iter().filter(|str| !str.is_empty()).map(|str| str.to_string()).collect();
+        let bob_list = contents.lines().filter(|str| !str.is_empty()).map(|str| str.to_string()).collect();
         
         #[cfg(debug_assertions)]
         println!("Now I got a list of bobs: {:?}", bob_list);
