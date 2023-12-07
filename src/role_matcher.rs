@@ -20,7 +20,7 @@ impl RoleMatcher {
                 (
                     v[0].to_string(),
                     match v[1].parse::<u64>() {
-                        Ok(id) => RoleId(id),
+                        Ok(id) => RoleId::new(id),
                         Err(_) => panic!("Invalid role id"),
                     }
                 )
