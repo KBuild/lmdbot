@@ -9,6 +9,7 @@ use serenity::model::id::GuildId;
 use serenity::prelude::*;
 
 use crate::bob_generator::BobGenerator;
+use crate::lotto_generator::LottoGenerator;
 use crate::role_matcher::RoleMatcher;
 
 pub struct BotHandler { }
@@ -41,6 +42,7 @@ impl EventHandler for BotHandler {
                     )
                 ),
             CreateCommand::new("bob").description("그래서 오늘 뭐 먹음?"),
+            CreateCommand::new("lotto").description("로또번호 생성"),
         ]).await;
 
         #[cfg(debug_assertions)]
@@ -79,6 +81,11 @@ impl EventHandler for BotHandler {
                     }
                     break 'return_content "참가실패! 프로그래머를 불러봐요~".to_string();
                 },
+                "lotto" => {
+                    let ctxdata = ctx.data.as_ref().read().await;
+                    let lotto_gen = ctxdata.get::<LottoGenerator>().unwrap();
+                    lotto_gen.choose_lotto_6_45()
+                }
                 _ => "not implemented :(".to_string(),
             };
 
