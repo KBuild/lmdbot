@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use serenity::all::{ResolvedValue, ResolvedOption};
 use serenity::async_trait;
-use serenity::builder::{CreateCommand, CreateCommandOption, CreateInteractionResponse, CreateInteractionResponseMessage, EditMessage};
+use serenity::builder::{CreateCommand, CreateCommandOption, CreateInteractionResponse, CreateInteractionResponseMessage, CreateMessage};
 use serenity::client::{Context, EventHandler};
 use serenity::model::application::{CommandOptionType, Interaction};
 use serenity::model::gateway::Ready;
@@ -26,8 +26,10 @@ impl EventHandler for BotHandler {
     async fn message(&self, ctx: Context, msg: Message) {
         if let Some(matched) = X_TWITTER_MATCH.captures(&msg.content) {
             if let Some(link_without_host) = matched.get(2) {
-                let builder = EditMessage::new().content(format!("https://fxtwitter{}", link_without_host.as_str()));
-                msg.channel_id.edit_message(ctx.http, msg.id, builder).await.unwrap();
+                let builder = CreateMessage::new().content(format!("https://fxtwitter{}", link_without_host.as_str()));
+                //msg.channel_id.edit_message(ctx.http, msg.id, builder).await.unwrap();
+                msg.channel_id.send_message(&ctx.http, builder).await.unwrap();
+                msg.channel_id.delete_message(&ctx.http, msg.id).await.unwrap();
             }
         }
     }
