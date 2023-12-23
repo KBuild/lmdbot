@@ -2,11 +2,12 @@ use std::env;
 
 use serenity::all::{ResolvedValue, ResolvedOption};
 use serenity::async_trait;
-use serenity::builder::{CreateCommand, CreateCommandOption, CreateInteractionResponse, CreateInteractionResponseMessage};
+use serenity::builder::{CreateCommand, CreateCommandOption, CreateInteractionResponse, CreateInteractionResponseMessage, EditMessage};
+use serenity::client::{Context, EventHandler};
 use serenity::model::application::{CommandOptionType, Interaction};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
-use serenity::prelude::*;
+use serenity::model::prelude::Message;
 
 use crate::bob_generator::BobGenerator;
 use crate::lotto_generator::LottoGenerator;
@@ -16,6 +17,13 @@ pub struct BotHandler { }
 
 #[async_trait]
 impl EventHandler for BotHandler {
+    async fn message(&self, ctx: Context, msg: Message) {
+        if msg.content.contains("https://x.com") {
+            let builder = EditMessage::new().content(msg.content.replace("https://x.com", "https://fxtwitter.com"));
+            msg.channel_id.edit_message(ctx.http, msg.id, builder).await.unwrap();
+        }
+    }
+
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
 
