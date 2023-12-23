@@ -24,12 +24,12 @@ lazy_static! {
 #[async_trait]
 impl EventHandler for BotHandler {
     async fn message(&self, ctx: Context, msg: Message) {
-        if let Some(matched) = X_TWITTER_MATCH.captures(&msg.content) {
-            if let Some(link_without_host) = matched.get(2) {
-                let builder = CreateMessage::new().content(format!("https://fxtwitter{}", link_without_host.as_str()));
-                msg.channel_id.send_message(&ctx.http, builder).await.unwrap();
-                msg.channel_id.delete_message(&ctx.http, msg.id).await.unwrap();
-            }
+        if X_TWITTER_MATCH.is_match(&msg.content) {
+            let new_content = X_TWITTER_MATCH.replace(&msg.content, "https://fxtwitter$2");
+            let original_user_id = msg.author.id;
+            let builder = CreateMessage::new().content(format!("[링크수정] <@{}>\n{}", original_user_id, new_content));
+            msg.channel_id.send_message(&ctx.http, builder).await.unwrap();
+            msg.channel_id.delete_message(&ctx.http, msg.id).await.unwrap();   
         }
     }
 
