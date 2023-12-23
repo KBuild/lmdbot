@@ -1,12 +1,15 @@
 use std::env;
 
+use lazy_static::lazy_static;
+use regex::Regex;
 use serenity::all::{ResolvedValue, ResolvedOption};
 use serenity::async_trait;
-use serenity::builder::{CreateCommand, CreateCommandOption, CreateInteractionResponse, CreateInteractionResponseMessage};
+use serenity::builder::{CreateCommand, CreateCommandOption, CreateInteractionResponse, CreateInteractionResponseMessage, CreateMessage};
+use serenity::client::{Context, EventHandler};
 use serenity::model::application::{CommandOptionType, Interaction};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
-use serenity::prelude::*;
+use serenity::model::prelude::Message;
 
 use crate::bob_generator::BobGenerator;
 use crate::lotto_generator::LottoGenerator;
@@ -14,8 +17,22 @@ use crate::role_matcher::RoleMatcher;
 
 pub struct BotHandler { }
 
+lazy_static! {
+    pub static ref X_TWITTER_MATCH: Regex = Regex::new(r"https\:\/\/(twitter|x)(.com\/\w+\/status\/\d+)").unwrap();
+}
+
 #[async_trait]
 impl EventHandler for BotHandler {
+    async fn message(&self, ctx: Context, msg: Message) {
+        if X_TWITTER_MATCH.is_match(&msg.content) {
+            let new_content = X_TWITTER_MATCH.replace(&msg.content, "https://fxtwitter$2");
+            let original_user_id = msg.author.id;
+            let builder = CreateMessage::new().content(format!("[링크수정] <@{}>\n{}", original_user_id, new_content));
+            msg.channel_id.send_message(&ctx.http, builder).await.unwrap();
+            msg.channel_id.delete_message(&ctx.http, msg.id).await.unwrap();   
+        }
+    }
+
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
 
