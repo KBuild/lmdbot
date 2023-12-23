@@ -1,5 +1,7 @@
 use std::env;
 
+use lazy_static::lazy_static;
+use regex::Regex;
 use serenity::all::{ResolvedValue, ResolvedOption};
 use serenity::async_trait;
 use serenity::builder::{CreateCommand, CreateCommandOption, CreateInteractionResponse, CreateInteractionResponseMessage, EditMessage};
@@ -15,12 +17,18 @@ use crate::role_matcher::RoleMatcher;
 
 pub struct BotHandler { }
 
+lazy_static! {
+    pub static ref X_TWITTER_MATCH: Regex = Regex::new(r"(twitter|x)(.com\/\w+\/status\/\d+)").unwrap();
+}
+
 #[async_trait]
 impl EventHandler for BotHandler {
     async fn message(&self, ctx: Context, msg: Message) {
-        if msg.content.contains("https://x.com") {
-            let builder = EditMessage::new().content(msg.content.replace("https://x.com", "https://fxtwitter.com"));
-            msg.channel_id.edit_message(ctx.http, msg.id, builder).await.unwrap();
+        if let Some(matched) = X_TWITTER_MATCH.captures(&msg.content) {
+            if let Some(link_without_host) = matched.get(2) {
+                let builder = EditMessage::new().content(format!("https://fxtwitter{}", link_without_host.as_str()));
+                msg.channel_id.edit_message(ctx.http, msg.id, builder).await.unwrap();
+            }
         }
     }
 
