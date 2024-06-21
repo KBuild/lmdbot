@@ -22,7 +22,9 @@ async fn main() {
         | GatewayIntents::MESSAGE_CONTENT;
 
     let mut client = Client::builder(&token, intents)
-        .event_handler(handler::BotHandler { })
+        .event_handler(handler::BotHandler { 
+            use_twitter_replacer: env::var("USE_TWITTER_REPLACER").map_or(true, |env_var| {  !(env_var == "false" || env_var == "FALSE") }), 
+        })
         .await
         .expect("Err creating client");
         {

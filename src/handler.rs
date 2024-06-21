@@ -15,7 +15,9 @@ use crate::bob_generator::BobGenerator;
 use crate::lotto_generator::LottoGenerator;
 use crate::role_matcher::RoleMatcher;
 
-pub struct BotHandler { }
+pub struct BotHandler { 
+    pub use_twitter_replacer: bool,
+}
 
 lazy_static! {
     pub static ref X_TWITTER_MATCH: Regex = Regex::new(r"https\:\/\/(twitter|x)(.com\/\w+\/status\/\d+)").unwrap();
@@ -24,7 +26,7 @@ lazy_static! {
 #[async_trait]
 impl EventHandler for BotHandler {
     async fn message(&self, ctx: Context, msg: Message) {
-        if X_TWITTER_MATCH.is_match(&msg.content) {
+        if self.use_twitter_replacer && X_TWITTER_MATCH.is_match(&msg.content) {
             let new_content = X_TWITTER_MATCH.replace(&msg.content, "https://fxtwitter$2");
             let original_user_id = msg.author.id;
             let builder = CreateMessage::new().content(format!("[링크수정] <@{}>\n{}", original_user_id, new_content));
