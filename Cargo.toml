@@ -1,5 +1,5 @@
 [package]
-name = "dsbot"
+name = "lmdbot"
 version = "2024.6.21"
 edition = "2021"
 
